@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Login</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.box {
+			width: 100%;
+			height: 100vh;
+			background-color: #f7da55;
+			position: relative;
+		}
+
+		.loginBox {
+			position: absolute;
+			width: 450px;
+			height: 500px;
+			background-color: #eeeeee;
+			top: 50%;
+			margin-top: -250px;
+			left: 50%;
+			margin-left: -225px;
+			border-radius: 10px;
+			box-shadow: 0 0 15px #a2a2a5;
+		}
+
+		.loginTitl {
+			text-align: center;
+			padding: 20px 0;
+			padding-top: 40px;
+			font-size: 30px;
+			color: #666666;
+			user-select: none;
+		}
+
+		.loginText {
+			width: 100%;
+			height: 50px;
+			/* background-color: #f60; */
+			margin: 50px 0;
+		}
+
+		.loginText>input {
+			height: 100%;
+			width: 350px;
+			display: block;
+			margin: 0 auto;
+			font-size: 18px;
+			background-color: #a1aca1;
+			box-sizing: border-box;
+			padding-left: 10px;
+		}
+
+		.loginbtn {
+			width: 350px;
+			margin: 0 auto;
+			height: 50px;
+			background-color: rgb(87, 226, 60);
+			display: block;
+			line-height: 50px;
+			font-size: 18px;
+			text-align: center;
+			user-select: none;
+			color: #fff;
+			font-weight: 600;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.loginbtn:hover {
+			box-shadow: 0 0 10px rgb(87, 226, 60);
+		}
+
+		.myskip {
+			margin-top: 5px;
+			color: #fff;
+			;
+			display: block;
+			cursor: pointer;
+			width: 70px;
+			text-align: center;
+			margin-left: 50px;
+			padding: 5px;
+			border-radius: 3px;
+			background-color: rgb(70, 177, 21);
+		}
+	</style>
+</head>
+
+<body>
+	<div class="box">
+		<div class="loginBox">
+			<p class="loginTitl">登录</p>
+			<div class="loginText">
+				<input type="text" placeholder="输入你的账号" id="account" />
+			</div>
+			<div class="loginText">
+				<input type="text" placeholder="输入你的密码" id="pwd" />
+			</div>
+			<a class="loginbtn" id="loginbtn">确认登录</a>
+			<a class="myskip" id="goregister">去注册》</a>
+		</div>
+	</div>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		// 地址
+		// var mysite = "http://localhost";
+		var mysite = "http://192.168.0.117";
+		//   192.168.0.119
+		// 缓存操作=======================================================缓存操作模块===================================================
+		//添加缓存方法-------------------------------------------------
+		function addcache(cachekey, myArr7) {
+			//添加缓存a
+			sessionStorage.setItem(cachekey, myArr7);
+		};
+		//写入缓存的方法+转json字符串方法-------------------------------------------------
+		function setmycache(cachekey, myArr) {
+			var myArr17 = JSON.stringify(myArr);
+			// console.log(myArr17);
+			//添加缓存a
+			this.addcache(cachekey, myArr17);
+		};
+
+		//获取缓存对象方法+转换json对象-----------------------------------------------------------
+		function getmycache(cachekey) {
+			if (window.sessionStorage[cachekey]) {
+				// alert("有");
+				return JSON.parse(sessionStorage.getItem(cachekey));
+			} else {
+				var myArr7 = [{
+					name: [],
+				}];
+				myArr7 = JSON.stringify(myArr7);
+				this.addcache(cachekey, myArr7);
+				return JSON.parse(sessionStorage.getItem(cachekey));
+			}
+		};
+		// 缓存操作=======================================================缓存操作模块===================================================
+
+		var socket = io();
+
+
+		// 点击登录方法
+		loginbtn.onclick = function () {
+			// alert("登录");  
+			var account = document.querySelector("#account").value;
+			var pwd = document.querySelector("#pwd").value;
+			var obj = {
+				"account": account,
+				"pwd": pwd
+			}
+			// console.log(obj);
+			obj = JSON.stringify(obj);
+			// console.log(obj);
+
+
+			socket.emit("login", obj);
+		}
+		// 相应登录
+		socket.on("Rloing", function (n) {
+			// alert("跳转");
+			if (n == 0 || n == "0") {
+				// 失败s
+				alert("账户或密码错误，登录失败");
+			}
+
+
+			// else if (n == 2) {
+			// 	alert("你的账号已被登录，请勿重复登录！");
+			// }
+			else {
+				alert("登录成功");
+				// 成功
+				//存入缓存===========
+				var myarr7 = {
+					name: n
+				}
+				setmycache("chatroom", myarr7);
+				// alert(account);
+				window.location.href = mysite + ":3000";
+			}
+		});
+		//去注册方法==============
+		goregister.onclick = function () {
+			window.location.href = mysite + ":3000/register";
+		}
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+
+        // window.onbeforeunload = function () {//窗口关闭前
+        //             console.log(12);
+        //             return '确认要关闭当前窗口？';
+        //         };
+        // window.onunload = function(){//窗口关闭后
+        //           localStorage.setItem('closeTestData',40);
+
+        // } 
+
+
+        window.onbeforeunload = function () {
+            var n = window.event.screenX - window.screenLeft;
+            var b = n > document.documentElement.scrollWidth - 20;
+            if (b && window.event.clientY < 0 || window.event.altKey) {
+                alert("是关闭而非刷新");
+                window.event.returnValue = ""; //这里可以放置你想做的操作代码
+            } else {
+                alert("是刷新而非关闭");
+            }
+        }
+
+
+
+
+    </script>
+</body>
+
+</html>

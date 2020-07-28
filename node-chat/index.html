@@ -1,0 +1,470 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Helvetica, Arial;
+      /* padding-left: 50px; */
+
+
+    }
+
+    li {
+      /* background-color: rgb(247, 228, 247); */
+      font-size: 20px;
+      padding: 20px 0;
+      list-style: none;
+    }
+
+    /* li:nth-child(2n) {
+      background-color: rgb(240, 250, 233);
+    } */
+
+    input {
+      height: 30px;
+      font-size: 20px;
+
+    }
+
+
+
+    #ebtn {
+      /* background-color: rgb(207, 58, 58); */
+      padding: 0 5px;
+      cursor: pointer;
+      display: block;
+      width: 50px;
+      font-size: 16px;
+      color: #fff;
+      float: right;
+      margin-right: 50px;
+      line-height: 50px;
+      color: #f06
+    }
+
+    #ebtn:hover {
+      text-shadow: 0 0 5px rgb(201, 53, 8);
+    }
+
+    .top {
+      width: 100vw;
+      box-sizing: border-box;
+      float: left;
+      background-color: rgb(172, 211, 81);
+      position: fixed;
+      top: 0px;
+    }
+
+    .countuser {
+      margin-left: 50px;
+      color: #fff;
+      display: inline-block;
+    }
+
+    .inputbox {
+      width: 100%;
+      background-color: rgb(205, 233, 140);
+      position: fixed;
+      bottom: 0px;
+      padding-bottom: 20px;
+    }
+
+    .mm {
+      width: 70%;
+      margin-left: 3%;
+      height: 50px;
+
+
+      margin-top: 5px;
+    }
+
+    #fbtn {
+      /* background-color: #fff; */
+      /* background-image: linear-gradient(#a8edea, #fed6e3); */
+      background-color: rgb(76, 184, 43);
+      user-select: none;
+      color: #fff;
+      font-size: 18px;
+      display: inline-block;
+      cursor: pointer;
+      width: 15%;
+      line-height: 50px;
+      text-align: center;
+      border-radius: 5px;
+      transition: all .2s;
+    }
+
+    #fbtn:hover {
+      box-shadow: 0 0 10px rgb(76, 184, 43);
+    }
+
+    #messages {
+      padding-top: 150px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      padding-left: 20px;
+      padding-right: 20px;
+      margin-bottom: 100px;
+    }
+
+    #myname {
+      /* background-color: rgb(207, 58, 58); */
+      padding: 0 5px;
+      cursor: pointer;
+      display: block;
+      /* width: 50px; */
+      font-size: 16px;
+
+      color: #fff;
+      float: right;
+      margin-right: 20px;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 50px;
+
+    }
+
+    #userListbox {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 250px;
+      height: 100vh;
+      background-color: rgb(203, 238, 195);
+      padding-left: 10px;
+      box-sizing: border-box;
+      padding-top: 50px;
+
+    }
+
+    #userListbox>span {
+      position: absolute;
+      top: 0;
+      margin: 0;
+      padding: 0;
+      height: 50px;
+      width: 50px;
+      color: #f06;
+      margin-left: 190px;
+      text-align: center;
+      font-size: 30px;
+      line-height: 50px;
+      /* background-color: #f60; */
+      user-select: none;
+      cursor: pointer;
+    }
+
+
+    #userListbox>span:hover {
+      background-color: rgb(223, 15, 15);
+      color: #fff;
+    }
+
+    #userList {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    #userList>li {
+      height: 50px;
+      width: 100%;
+      overflow: hidden;
+      color: #e05607;
+      text-overflow: ellipsis;
+
+    }
+
+    /* #userList>li:hover{
+     color: #fff;
+    } */
+
+
+
+ 
+
+    .mytext {
+      color: #F08080;
+      background-color: rgb(174, 236, 226);
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: inline-block;
+      min-width: 20px;
+      max-width: 50%;
+      font-size: 14px;
+      word-break: break-all;
+    }
+
+    .mytext2 {
+      color: #F08080;
+      background-color: rgb(188, 236, 174);
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: inline-block;
+      min-width: 20px;
+      font-size: 14px;
+      max-width: 50%;
+      word-break: break-all;
+    }
+
+    .zxlb {
+      height: 50px;
+      line-height: 50px;
+      cursor: pointer;
+      user-select: none;
+      display: inline-block;
+      /* background-color: #f60; */
+      color: #bd1b79;
+      width: 170px;
+      margin-left: 50px;
+    }
+
+    .abc {
+      margin-right: 20px;
+      display: inline-block;
+      /* background-color: #f60; */
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+  <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="top">
+    <div class="countuser" id="countuser">聊天室人数</div>
+    <div class="zxlb" id="zxlb">成员列表</div>
+    <div id="ebtn">退出</div>
+    <div class="myname" id="myname"></div>
+  </div>
+  <ul id="messages"></ul>
+  <!-- 输入 -->
+  <div class="inputbox">
+    <input id="m" class="mm" autocomplete="off" />
+    <div id="fbtn">发送</div>
+  </div>
+  </div>
+
+
+  <div id="userListbox">
+    <span onclick="guanbi()">x</span>
+    <ul id="userList"></ul>
+  </div>
+
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  // 地址
+  // var mysite = "http://localhost";
+
+  var mysite = "http://192.168.0.117";
+
+
+
+
+
+
+
+
+
+  var socket = io();
+
+  var username = "";
+  // 缓存操作=======================================================缓存操作模块===================================================
+  //添加缓存方法-------------------------------------------------
+  function addcache(cachekey, myArr7) {
+    //添加缓存a
+    sessionStorage.setItem(cachekey, myArr7);
+  };
+  //写入缓存的方法+转json字符串方法-------------------------------------------------
+  function setmycache(cachekey, myArr) {
+    var myArr17 = JSON.stringify(myArr);
+    // console.log(myArr17);
+    //添加缓存a
+    this.addcache(cachekey, myArr17);
+  };
+
+  //获取缓存对象方法+转换json对象-----------------------------------------------------------
+  function getmycache(cachekey) {
+    if (window.sessionStorage[cachekey]) {
+      // alert("有");
+      return JSON.parse(sessionStorage.getItem(cachekey));
+    } else {
+      var myArr7 = [{
+        name: [],
+      }];
+      myArr7 = JSON.stringify(myArr7);
+      this.addcache(cachekey, myArr7);
+      return JSON.parse(sessionStorage.getItem(cachekey));
+    }
+  };
+  // 缓存操作=======================================================缓存操作模块===================================================
+  // 验证登录状态
+  var myname77;
+  myname77 = getmycache("chatroom");
+  username = myname77.name;
+  // console.log(username);
+  socket.emit("loginstate", username);
+  // alert(abc.name);
+  socket.on("loginreturn", function (y) {
+    // alert(y);
+    if (y) {
+      document.querySelector("title").innerText = username + "的聊天窗口";
+
+      //发送昵称给后端
+      socket.emit("join", username);
+      //收到服务器发来的join事件时
+      socket.on("join", function (user) {
+        // name=user;
+        var userdata = JSON.parse(user);
+        if (username == null || username == "") {
+          username = userdata.name
+          document.querySelector("title").innerText = username + "的聊天窗口";
+        }
+        // addLine(user + " 加入了群聊")
+        // alert(userdata.islogin);
+        if (userdata.islogin == 0) {
+          $('#messages').append($('<li style="color:#33ff66;text-align:center;max-width:90vw; overflow: hidden; text-overflow: ellipsis;">').text(userdata.name + " 加入了群聊"));
+        }
+        // gdt()
+        document.querySelector("#myname").innerText = myname77.name;
+      })
+    } else {
+      window.location.href = mysite + ":3000/login";
+    }
+  });
+  //在线人数===========
+  socket.on("countuser", function (data) {
+    var newdata = JSON.parse(data);
+    // console.log(newdata);
+    //在线人数
+    countuser.innerText = "聊天室人数：" + newdata.length;
+    //在线列表
+    var str = `<li>成员列表：</li>`;
+    for (let i = 0; i < newdata.length; i++) {
+      str += `<li>${newdata[i]}</li>`
+    }
+    userList.innerHTML = str;
+  });
+  //
+  function guanbi() {
+    document.querySelector("#userListbox").style.display = "none";
+  }
+  document.querySelector("#zxlb").onclick = function () {
+    document.querySelector("#userListbox").style.display = "block";
+  }
+  //输出模块
+  function addLine(msg) {
+    // var mmm=msg.split(":");
+    var msg7 = JSON.parse(msg);
+
+    if (msg7.name == myname77.name) {
+
+      var obj = `<li><span style="float:right;margin-left:20px;max-width: 200px;overflow: hidden;text-overflow: ellipsis;">${msg7.name}</span>
+        <span style="float:right; " class="mytext2">${msg7.Utext}</span>
+        <div style="clear: both;"></div></li>`;
+    } else {
+      var obj = `<li><span class="abc">${msg7.name}</span><span class="mytext">${msg7.Utext}</span></li>`;
+    }
+    $('#messages').append($(obj));
+    gdt();
+  }
+
+  //将新消息广播出去输出
+  socket.on("message", function (msg) {
+    addLine(msg)
+  })
+
+  // 退出提示
+  socket.on("quit", function (n) {
+    $('#messages').append($('<li style="color:red;text-align:center;max-width:90vw;overflow: hidden;text-overflow: ellipsis;">').text(n));
+    gdt()
+  })
+  //退出======================退出==========
+  document.querySelector("#ebtn").onclick = function () {
+    socket.emit("exit7", username);
+  };
+  //相应退出===============
+  socket.on("exitR", function (n) {
+
+    if (username == n) {
+      // alert(username,n);
+      window.location.href = mysite + ":3000/login";
+    }
+
+  })
+
+
+
+
+  //发送方法========================== 写成一个函数啊啊啊
+
+  function launch() {
+
+    var mhtext = document.querySelector("#m").value;//=============================================
+
+
+
+
+
+    if (mhtext != "") {
+      // console.log(mhtext);
+      var obj = {
+        name: username,
+        Utext: mhtext
+      }
+      obj = JSON.stringify(obj);
+      socket.emit("message", obj);
+      // alert(mhtext);
+      m.value = "";
+    }
+  }
+
+
+
+
+  // 点击发送
+  fbtn.onclick = function () {
+    launch();
+  }
+  $(document).keyup(function (event) {
+    if (event.keyCode == 13) {
+      launch();
+    }
+  })
+
+  // // /刷新时告诉后台我在搞事情哦是刷不是退
+  //   window.onunload = function() {
+  //     alert("fdsdsf");
+  //       socket.emit("Refresh",1)
+  //   }
+  // // //关闭
+  //   window.onbeforeunload = function() {
+  //     alert("啊啊啊啊");
+  //       socket.emit("myclose",1)
+  //   }
+
+
+  //滚动条1
+  function gdt() {
+    document.documentElement.scrollTop = document.documentElement.offsetHeight;
+    // console.log(
+    //   document.documentElement.offsetHeight);
+    // console.log(
+    //   document.documentElement.scrollTop);
+  }
+</script>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+</head>
+<style>
+    .loginbut {
+        background-color: #ff6600;
+        display: inline-block;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .goregister {
+        background-color: #ff009d;
+        display: inline-block;
+        cursor: pointer;
+        color: #fff;
+    }
+</style>
+
+<body>
+    <div class="loginbox">
+        <div class="box">
+            <input type="text" id="account" placeholder="账户">
+        </div>
+
+        <div class="box">
+            <input type="text" id="pwd" placeholder="密码">
+        </div>
+        <div class="loginbut" id="loginbut">点击登录</div>
+        <div class="goregister" id="goregister">去注册</div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        // 缓存操作=======================================================缓存操作模块===================================================
+        //添加缓存方法-------------------------------------------------
+        function addcache(cachekey, myArr7) {
+            //添加缓存a
+            sessionStorage.setItem(cachekey, myArr7);
+        };
+        //写入缓存的方法+转json字符串方法-------------------------------------------------
+        function setmycache(cachekey, myArr) {
+            var myArr17 = JSON.stringify(myArr);
+            console.log(myArr17);
+            //添加缓存a
+            this.addcache(cachekey, myArr17);
+        };
+
+        //获取缓存对象方法+转换json对象-----------------------------------------------------------
+        function getmycache(cachekey) {
+            if (window.sessionStorage[cachekey]) {
+                // alert("有");
+                return JSON.parse(sessionStorage.getItem(cachekey));
+            } else {
+                var myArr7 = [{
+                    name: [],
+                }];
+                myArr7 = JSON.stringify(myArr7);
+                this.addcache(cachekey, myArr7);
+                return JSON.parse(sessionStorage.getItem(cachekey));
+            }
+        };
+        // 缓存操作=======================================================缓存操作模块===================================================
+
+        var socket = io();
+
+     
+        // 点击登录方法
+        loginbut.onclick = function () {
+            // alert("登录");  
+            var account = document.querySelector("#account").value;
+            var pwd = document.querySelector("#pwd").value;
+            var obj = {
+                "account": account,
+                "pwd": pwd
+            }
+            console.log(obj);
+            obj = JSON.stringify(obj);
+            console.log(obj);
+
+
+            socket.emit("login", obj);
+        }
+        // 相应登录
+        socket.on("Rloing", function (n) {
+            // alert("跳转");
+            if (n == 0 || n == "0") {
+                // 失败s
+                alert("登录失败");
+            }
+
+
+            if (n == 2) {
+                alert("你的账号已被登录，请勿重复登录！");
+            }
+            else {
+                alert("登录成功");
+                // 成功
+                //存入缓存===========
+                var myarr7 = {
+                    name: n
+                }
+                setmycache("chatroom", myarr7);
+                // alert(account);
+                window.location.href = "http://localhost:3000";
+            }
+        });
+        //去注册方法==============
+        goregister.onclick = function () {
+            window.location.href = "http://localhost:3000/register";
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册</title>
+</head>
+<style>
+  	* {
+			margin: 0;
+			padding: 0;
+		}
+
+  .box {
+    width: 100%;
+    height: 100vh;
+    background-color: #f7da55;
+    position: relative;
+  }
+
+  .registerBox {
+    position: absolute;
+    width: 450px;
+    height: 500px;
+    background-color: #eeeeee;
+    top: 50%;
+    margin-top: -250px;
+    left: 50%;
+    margin-left: -225px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #a2a2a5;
+  }
+
+  .registerTitl {
+    text-align: center;
+    padding: 20px 0;
+    padding-top: 40px;
+    font-size: 30px;
+    color: #666666;
+    user-select: none;
+  }
+
+  .registerText {
+    width: 100%;
+    height: 50px;
+    /* background-color: #f60; */
+    margin: 50px 0;
+  }
+
+  .registerText>input {
+    height: 100%;
+    width: 350px;
+    display: block;
+    margin: 0 auto;
+    font-size: 18px;
+    background-color: #a1aca1;
+    box-sizing: border-box;
+    padding-left: 10px;
+  }
+
+  .registerbtn {
+    width: 350px;
+    margin: 0 auto;
+    height: 50px;
+    background-color: rgb(87, 226, 60);
+    display: block;
+    line-height: 50px;
+    font-size: 18px;
+    text-align: center;
+    user-select: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .registerbtn:hover {
+    box-shadow: 0 0 10px rgb(87, 226, 60);
+  }
+
+  .myskip {
+    margin-top: 5px;
+    color: #fff;
+    ;
+    display: block;
+    cursor: pointer;
+    width: 70px;
+    text-align: center;
+    margin-left: 50px;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: rgb(70, 177, 21);
+  }
+</style>
+
+<body>
+  <!-- <div class="registerbox">
+        <div class="box">
+            <input type="text" id="account" placeholder="账户">
+        </div>
+
+        <div class="box">
+            <input type="text" id="pwd" placeholder="密码">
+        </div>
+        <div class="registerbut" id="registerbut">点击注册</div>
+    <div class="goLogin" id="goLogin">去登录</div>
+    </div> -->
+
+
+  <div class="box">
+    <div class="registerBox">
+      <p class="registerTitl">注册</p>
+      <div class="registerText">
+        <input type="text" placeholder="由字母或汉字组成" id="account" />
+      </div>
+      <div class="registerText">
+        <input type="text" placeholder="输入你的密码" id="pwd" />
+      </div>
+      <a class="registerbtn" id="registerbut">确认注册</a>
+      <a class="myskip" id="goLogin">去登录》</a></a>
+    </div>
+  </div>
+
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // 地址
+    // var mysite = "http://localhost";
+    var mysite = "http://192.168.0.117";
+
+    var socket = io();
+    document.querySelector("#registerbut").onclick = function () {
+
+      var account = document.querySelector("#account").value;
+      var pwd = document.querySelector("#pwd").value;
+      if (account == null || account == "") {
+        alert("请输入账号");
+      }
+      else if (pwd == null || pwd == "") {
+        alert("请输入密码");
+      }
+      else {
+
+        //用户名
+        function username(str) {
+          var isMatch = /^[a-zA-Z\u4e00-\u9fa5]+$/.test(str);
+          return isMatch;
+        }
+        if (username(account)) {
+          var obj = {
+            "account": account,
+            "pwd": pwd
+          }
+          obj = JSON.stringify(obj);
+          // console.log(obj);
+          socket.emit("register", obj);
+
+        } else {
+          alert("用户名只能由字母或汉字组成");
+        }
+
+
+
+      }
+    }
+    // 注册结果==========
+    socket.on("registerR", function (n) {
+      if (n == 2) {
+        alert("用户名已被注册,请换个用户名");
+      }
+      if (n == 1) {
+        alert("注册成功");
+        window.location.href = mysite + ":3000/login"
+      }
+      if (n == 0) {
+        alert("注册失败");
+      }
+    });
+    //去登录页面
+    //去注册方法==============
+    document.querySelector("#goLogin").onclick = function () {
+      window.location.href = mysite + ":3000/login";
+    }
+
+  </script>
+</body>
+
+</html>
